@@ -16,10 +16,10 @@ Below is the workflow for **Nirnay**, illustrating the process of extracting, an
 
 ![Workflow](Assets/workflow.png)
 
-```
-
 ## Installation
+
 ### 1️⃣ Setup Virtual Environment
+
 ```sh
 python3 -m venv ~/env
 source ~/env/bin/activate
