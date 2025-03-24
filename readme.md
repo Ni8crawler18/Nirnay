@@ -14,7 +14,7 @@
 
 Below is the workflow for **Nirnay**, illustrating the process of extracting, analyzing, and fact-checking claims from live video streams.
 
-![Workflow](assets/workflow.png)
+![Workflow](Assets/workflow.png)
 
 ```
 
