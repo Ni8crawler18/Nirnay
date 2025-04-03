@@ -554,13 +554,18 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="relative h-[250px] rounded-lg overflow-hidden shadow-md">
-                  <Image
-                    src="/placeholder.svg?height=500&width=800"
-                    alt="Nirnay Tutorial"
-                    width={800}
-                    height={500}
-                    className="object-cover"
-                  />
+                <video
+                  src="/Nirnay - tutorial.mp4"
+                  width={800}
+                  height={500}
+                  className="object-cover w-full h-full rounded-lg shadow-md"
+                  controls
+                  controlsList="nodownload"
+                  disablePictureInPicture
+                  playsInline
+                >
+                  Your browser does not support the video tag.
+                </video>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="rounded-full bg-white/80 p-4">
                       <svg

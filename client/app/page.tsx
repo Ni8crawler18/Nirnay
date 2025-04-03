@@ -305,9 +305,9 @@ export default function LandingPage() {
                     </Button>
                   </Link>
                 </div>
-                <div className="relative h-[300px] w-full overflow-hidden rounded-2xl border shadow-md">
+                <div className="relative h-[380px] w-full overflow-hidden rounded-2xl border shadow-md">
                   <Image
-                    src="/placeholder.svg?height=600&width=800"
+                    src="/workflow.png"
                     alt="Nirnay Process Diagram"
                     width={800}
                     height={600}
