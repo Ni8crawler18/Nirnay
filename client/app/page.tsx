@@ -98,7 +98,7 @@ export default function LandingPage() {
               <div className="flex items-center justify-center">
                 <div className="relative h-[500px] w-full overflow-hidden rounded-2xl shadow-2xl">
                   <Image
-                    src="/placeholder.svg?height=1000&width=800"
+                    src="/broadcast_image.jpg"
                     alt="Nirnay Dashboard"
                     width={800}
                     height={1000}
@@ -125,19 +125,19 @@ export default function LandingPage() {
             </div>
             <div className="mx-auto grid max-w-5xl grid-cols-2 gap-10 py-10 md:grid-cols-5">
               <div className="flex items-center justify-center grayscale transition-all hover:grayscale-0">
-                <Image src="/placeholder.svg?height=60&width=140" alt="Partner Logo" width={140} height={60} />
+                <Image src="/waves_logo.png?height=60&width=140" alt="Partner Logo" width={140} height={60} />
               </div>
               <div className="flex items-center justify-center grayscale transition-all hover:grayscale-0">
-                <Image src="/placeholder.svg?height=60&width=140" alt="Partner Logo" width={140} height={60} />
+                <Image src="/MIB_logo.svg?height=60&width=140" alt="Partner Logo" width={140} height={60} />
               </div>
               <div className="flex items-center justify-center grayscale transition-all hover:grayscale-0">
-                <Image src="/placeholder.svg?height=60&width=140" alt="Partner Logo" width={140} height={60} />
+                <Image src="/Truthtell_logo.png?height=60&width=140" alt="Partner Logo" width={140} height={60} />
               </div>
               <div className="flex items-center justify-center grayscale transition-all hover:grayscale-0">
-                <Image src="/placeholder.svg?height=60&width=140" alt="Partner Logo" width={140} height={60} />
+                <Image src="/MHA_logo.svg?height=60&width=140" alt="Partner Logo" width={140} height={60} />
               </div>
               <div className="flex items-center justify-center grayscale transition-all hover:grayscale-0">
-                <Image src="/placeholder.svg?height=60&width=140" alt="Partner Logo" width={140} height={60} />
+                <Image src="/NFSU_logo.png?height=60&width=140" alt="Partner Logo" width={140} height={60} />
               </div>
             </div>
           </div>
@@ -605,7 +605,7 @@ export default function LandingPage() {
                     />
                   </svg>
                   <span className="text-sm text-muted-foreground">
-                    Ministry of Broadcasting, Shastri Bhawan, New Delhi, India
+                    Nirnay, Bannari Amman Institute of Technology, Sathyamangalam, Tamil Nadu, India
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
@@ -625,7 +625,7 @@ export default function LandingPage() {
                       d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                     />
                   </svg>
-                  <span className="text-sm text-muted-foreground">contact@nirnay.gov.in</span>
+                  <span className="text-sm text-muted-foreground">contact@nirnay.com</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <svg
@@ -644,7 +644,7 @@ export default function LandingPage() {
                       d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                     />
                   </svg>
-                  <span className="text-sm text-muted-foreground">+91 11 2338 2449</span>
+                  <span className="text-sm text-muted-foreground">+91 8668135371</span>
                 </li>
               </ul>
             </div>

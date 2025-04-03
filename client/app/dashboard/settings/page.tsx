@@ -58,19 +58,19 @@ export default function SettingsPage() {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" placeholder="Your name" defaultValue="Rajesh Kumar" />
+                  <Input id="name" placeholder="Your name" defaultValue="Venkatesh R" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
-                  <Input id="email" type="email" placeholder="Your email" defaultValue="rajesh.kumar@gov.in" />
+                  <Input id="email" type="email" placeholder="Your email" defaultValue="venkatesh@nirnay.com" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="organization">Organization</Label>
-                  <Input id="organization" placeholder="Your organization" defaultValue="Ministry of Broadcasting" />
+                  <Input id="organization" placeholder="Your organization" defaultValue="Bannari Amman Institute of Technology" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="role">Role</Label>
-                  <Input id="role" placeholder="Your role" defaultValue="Media Analyst" />
+                  <Input id="role" placeholder="Your role" defaultValue="ML developer" />
                 </div>
               </div>
 
@@ -80,7 +80,7 @@ export default function SettingsPage() {
                   id="bio"
                   placeholder="Tell us about yourself"
                   className="min-h-[100px]"
-                  defaultValue="Media analyst specializing in broadcast verification and fact-checking for the Ministry of Broadcasting."
+                  defaultValue="your bio here"
                 />
               </div>
             </CardContent>
