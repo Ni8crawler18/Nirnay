@@ -4,7 +4,7 @@ import { useState } from "react"
 import { AlertCircle, ArrowRight, CheckCircle, ChevronDown, Clock, ExternalLink, XCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-
+import { transcribeAudio, extractClaims } from "@/lib/api";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -18,18 +18,103 @@ export default function DashboardPage() {
   const [url, setUrl] = useState("")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [showResults, setShowResults] = useState(false)
+  const [transcript, setTranscript] = useState("");
+  const [claims, setClaims] = useState<string[]>([]);
+  const [progress, setProgress] = useState(60); // 0 to 100
+  type StatusType = "pending" | "in_progress" | "complete";
 
-  const handleAnalyze = () => {
-    if (!url) return
+  const [status, setStatus] = useState<{
+    audio: StatusType;
+    transcript: StatusType;
+    claims: StatusType;
+    verify: StatusType;
+  }>({
+    audio: "pending",
+    transcript: "pending",
+    claims: "pending",
+    verify: "pending",
+  });
 
-    setIsAnalyzing(true)
+  const getStatusText = (status: StatusType) => {
+    switch (status) {
+      case "complete":
+        return "Complete";
+      case "in_progress":
+        return "In Progress";
+      default:
+        return "Pending";
+    }
+  };
+  
+  const getStatusStyle = (status: StatusType) => {
+    switch (status) {
+      case "complete":
+        return "text-lg font-semibold text-green-600";
+      case "in_progress":
+        return "text-lg font-semibold text-orange-600";
+      default:
+        return "text-lg font-semibold text-slate-400";
+    }
+  };
+  
+  const getStepMessage = (status: { audio: StatusType; transcript: StatusType; claims: StatusType; verify: StatusType }) => {
+    if (status.audio === "in_progress") return "Extracting audio from live stream...";
+    if (status.transcript === "in_progress") return "Transcribing audio...";
+    if (status.claims === "in_progress") return "Detecting claims...";
+    if (status.verify === "in_progress") return "Verifying claims...";
+    return "Initializing process...";
+  };
+  
+  const handleAnalyze = async () => {
+    if (!url) return;
+    setIsAnalyzing(true);
+    setShowResults(false);
+  
+    // Reset status
+    setStatus({
+      audio: "in_progress",
+      transcript: "pending",
+      claims: "pending",
+      verify: "pending",
+    });
+    setProgress(10);
+  
+    try {
+      // Simulate audio extraction complete
+      await new Promise((res) => setTimeout(res, 1000)); // simulate delay
+      setStatus(prev => ({ ...prev, audio: "complete", transcript: "in_progress" }));
+      setProgress(30);
+  
+      // Step 1: Transcribe Audio
+      const transcriptionResponse = await transcribeAudio(url);
+      setTranscript(transcriptionResponse.transcription || "No transcript available.");
+      setStatus(prev => ({ ...prev, transcript: "complete", claims: "in_progress" }));
+      setProgress(60);
+  
+      // Step 2: Extract Claims
+      const claimsResponse = await extractClaims(url); // Pass the URL here
+      if (claimsResponse.output_file) {
+        const claimsText = await fetch(claimsResponse.output_file).then(res => res.text());
+        setClaims(claimsText.split("\n"));
+      }
+      setStatus(prev => ({ ...prev, claims: "complete", verify: "in_progress" }));
+      setProgress(80);
+  
+      // Simulate verification stage
+      await new Promise((res) => setTimeout(res, 1000)); // simulate delay
+      setStatus(prev => ({ ...prev, verify: "complete" }));
+      setProgress(100);
+  
+      setShowResults(true);
+    } catch (error) {
+      console.error("Error processing:", error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
-    // Simulate analysis process
-    setTimeout(() => {
-      setIsAnalyzing(false)
-      setShowResults(true)
-    }, 3000)
-  }
+  const statusKeys: Array<keyof typeof status> = ["audio", "transcript", "claims", "verify"];
+  // Use `statusKeys` to safely index `status` in other parts of the code if needed.
 
   return (
     <div className="flex flex-col gap-10 p-6 md:p-10">
@@ -80,43 +165,45 @@ export default function DashboardPage() {
 
       {isAnalyzing && (
         <Card className="border-orange-100 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <Clock className="h-5 w-5 text-orange-600 animate-pulse" />
-              Processing Live Broadcast
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <div className="h-2 w-full rounded-full bg-slate-100">
-                <div className="h-2 animate-pulse rounded-full bg-orange-600" style={{ width: "60%" }}></div>
-              </div>
-              <div className="flex justify-between text-sm text-muted-foreground">
-                <span>Extracting audio from live stream...</span>
-                <span>60%</span>
-              </div>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <Clock className="h-5 w-5 text-orange-600 animate-pulse" />
+            Processing Live Broadcast
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <div className="h-2 w-full rounded-full bg-slate-100">
+              <div
+                className="h-2 animate-pulse rounded-full bg-orange-600"
+                style={{ width: `${progress}%` }}
+              ></div>
             </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="rounded-lg border bg-white p-4 text-center">
-                <div className="text-sm font-medium text-muted-foreground mb-1">Audio Extraction</div>
-                <div className="text-lg font-semibold text-green-600">Complete</div>
-              </div>
-              <div className="rounded-lg border bg-white p-4 text-center">
-                <div className="text-sm font-medium text-muted-foreground mb-1">Transcription</div>
-                <div className="text-lg font-semibold text-orange-600">In Progress</div>
-              </div>
-              <div className="rounded-lg border bg-white p-4 text-center">
-                <div className="text-sm font-medium text-muted-foreground mb-1">Claim Detection</div>
-                <div className="text-lg font-semibold text-slate-400">Pending</div>
-              </div>
-              <div className="rounded-lg border bg-white p-4 text-center">
-                <div className="text-sm font-medium text-muted-foreground mb-1">Verification</div>
-                <div className="text-lg font-semibold text-slate-400">Pending</div>
-              </div>
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>{getStepMessage(status)}</span>
+              <span>{progress}%</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+      
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { label: "Audio Extraction", key: "audio" as keyof typeof status },
+              { label: "Transcription", key: "transcript" as keyof typeof status },
+              { label: "Claim Detection", key: "claims" as keyof typeof status },
+              { label: "Verification", key: "verify" as keyof typeof status },
+            ].map(({ label, key }) => (
+              <div key={key} className="rounded-lg border bg-white p-4 text-center">
+                <div className="text-sm font-medium text-muted-foreground mb-1">
+                  {label}
+                </div>
+                <div className={getStatusStyle(status[key])}>
+                  {getStatusText(status[key])}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>      
       )}
 
       {showResults && (
@@ -146,72 +233,35 @@ export default function DashboardPage() {
                   <TabsTrigger value="sources">Sources</TabsTrigger>
                 </TabsList>
                 <TabsContent value="claims" className="space-y-6 pt-6">
-                  <Collapsible className="border rounded-lg shadow-sm">
-                    <CollapsibleTrigger className="flex w-full items-center justify-between p-5 font-medium">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                        <span>Global temperatures have risen by 1.1°C since pre-industrial times</span>
-                      </div>
-                      <ChevronDown className="h-4 w-4" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="border-t bg-slate-50 p-5">
-                      <p className="text-muted-foreground">
-                        This claim is verified by multiple scientific sources including NASA and the IPCC. The global
-                        average temperature has indeed risen by approximately 1.1°C since the pre-industrial era
-                        (1850-1900).
-                      </p>
-                      <div className="mt-4 flex items-center gap-2">
-                        <Link href="#" className="text-sm text-orange-600 flex items-center">
-                          View sources <ExternalLink className="ml-1 h-3 w-3" />
-                        </Link>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-
-                  <Collapsible className="border rounded-lg shadow-sm">
-                    <CollapsibleTrigger className="flex w-full items-center justify-between p-5 font-medium">
-                      <div className="flex items-center gap-3">
-                        <AlertCircle className="h-5 w-5 text-amber-500" />
-                        <span>Renewable energy now accounts for 40% of global energy production</span>
-                      </div>
-                      <ChevronDown className="h-4 w-4" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="border-t bg-slate-50 p-5">
-                      <p className="text-muted-foreground">
-                        This claim is partially accurate. According to the International Energy Agency (IEA), renewable
-                        energy accounts for approximately 29% of global electricity generation, not total energy
-                        production which is lower at around 17-18%.
-                      </p>
-                      <div className="mt-4 flex items-center gap-2">
-                        <Link href="#" className="text-sm text-orange-600 flex items-center">
-                          View sources <ExternalLink className="ml-1 h-3 w-3" />
-                        </Link>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-
-                  <Collapsible className="border rounded-lg shadow-sm">
-                    <CollapsibleTrigger className="flex w-full items-center justify-between p-5 font-medium">
-                      <div className="flex items-center gap-3">
-                        <XCircle className="h-5 w-5 text-red-600" />
-                        <span>Electric vehicles produce more emissions than gasoline cars</span>
-                      </div>
-                      <ChevronDown className="h-4 w-4" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="border-t bg-slate-50 p-5">
-                      <p className="text-muted-foreground">
-                        This claim is false. Multiple lifecycle analyses show that electric vehicles produce fewer
-                        emissions over their lifetime compared to gasoline vehicles, even when accounting for battery
-                        production and electricity generation.
-                      </p>
-                      <div className="mt-4 flex items-center gap-2">
-                        <Link href="#" className="text-sm text-orange-600 flex items-center">
-                          View sources <ExternalLink className="ml-1 h-3 w-3" />
-                        </Link>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
+                  {claims.length > 0 ? (
+                    claims.map((claim, index) => (
+                      <Collapsible key={index} className="border rounded-lg shadow-sm">
+                        <CollapsibleTrigger className="flex w-full items-center justify-between p-5 font-medium">
+                          <div className="flex items-center gap-3">
+                            {/* You can dynamically choose icon based on verification status later */}
+                            <AlertCircle className="h-5 w-5 text-amber-500" />
+                            <span>{claim}</span>
+                          </div>
+                          <ChevronDown className="h-4 w-4" />
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="border-t bg-slate-50 p-5">
+                          <p className="text-muted-foreground">
+                            {/* Placeholder for now; later you can pull in verification result here */}
+                            Verification details coming soon...
+                          </p>
+                          <div className="mt-4 flex items-center gap-2">
+                            <Link href="#" className="text-sm text-orange-600 flex items-center">
+                              View sources <ExternalLink className="ml-1 h-3 w-3" />
+                            </Link>
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    ))
+                  ) : (
+                    <div className="text-muted-foreground text-center">No claims extracted yet.</div>
+                  )}
                 </TabsContent>
+
                 <TabsContent value="transcript" className="pt-6">
                   <Card className="shadow-sm">
                     <CardContent className="p-5">
@@ -221,16 +271,14 @@ export default function DashboardPage() {
                         </Button>
                       </div>
                       <p className="text-muted-foreground whitespace-pre-line">
-                        "Today we're discussing climate change and its impacts. Global temperatures have risen by 1.1°C
-                        since pre-industrial times, which is causing significant changes to our planet's ecosystems.
-                        Renewable energy now accounts for 40% of global energy production, which is a positive step
-                        forward in addressing climate change. There's a common misconception that electric vehicles
-                        produce more emissions than gasoline cars, but this isn't supported by the evidence when we look
-                        at the full lifecycle analysis..."
+                        {transcript.length > 0
+                          ? transcript
+                          : "Transcript will appear here once audio is transcribed."}
                       </p>
                     </CardContent>
                   </Card>
                 </TabsContent>
+
                 <TabsContent value="sources" className="space-y-6 pt-6">
                   <div className="grid gap-6 md:grid-cols-2">
                     <Card className="shadow-sm">

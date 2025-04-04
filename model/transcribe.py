@@ -1,122 +1,120 @@
+# streamscribe/transcriber.py
+
 import os
 import time
 import whisper
-import threading
-import queue
+import subprocess
 import yt_dlp
-import torch
 from pydub import AudioSegment
+from tempfile import NamedTemporaryFile
 
-class LiveStreamTranscriber:
-    def __init__(self, url, chunk_duration=30, model_size="base"):
+CHUNK_DURATION = 30
+
+class YouTubeTranscriber:
+    def __init__(self, url, model_size="base", chunk_duration=30, output_path="transcription_results.txt"):
         self.url = url
-        self.chunk_duration = chunk_duration
         self.model = whisper.load_model(model_size)
-        self.audio_queue = queue.Queue()
-        self.text_queue = queue.Queue()
-        self.stop_event = threading.Event()
+        self.chunk_duration = chunk_duration
+        self.output_path = output_path
         self.temp_dir = "temp_audio"
         os.makedirs(self.temp_dir, exist_ok=True)
 
-    def download_audio(self, output_file):
-        """Download audio from a live stream using yt-dlp."""
+    def download_audio_file(self):
+        out_path = os.path.join(self.temp_dir, "yt_audio.%(ext)s")
         ydl_opts = {
             'format': 'bestaudio/best',
-            'outtmpl': output_file,
-            'quiet': False,
+            'outtmpl': out_path,
+            'quiet': True,
             'no_warnings': True,
-            'live_from_start': True,
-            'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'wav'}],
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'wav',
+                'preferredquality': '192',
+            }],
         }
 
-        def download_thread():
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(self.url, download=True)
+            return out_path.replace("%(ext)s", "wav")
+
+    def transcribe(self):
+        audio_path = self.download_audio_file()
+        audio = AudioSegment.from_wav(audio_path)
+        duration = len(audio) // 1000
+
+        transcription_output = []
+
+        for start in range(0, duration, self.chunk_duration):
+            end = min(start + self.chunk_duration, duration)
+            chunk = audio[start * 1000:end * 1000]
+            chunk_file = os.path.join(self.temp_dir, f"chunk_{start}_{end}.wav")
+            chunk.export(chunk_file, format="wav")
+
             try:
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    ydl.download([self.url])
+                result = self.model.transcribe(chunk_file, task="translate")
+                text = result["text"].strip()
+                print(f"🗣️ [{start}s–{end}s]: {text}")
+                transcription_output.append(text)
             except Exception as e:
-                print(f"Error downloading stream: {e}")
-                self.stop_event.set()
-
-        thread = threading.Thread(target=download_thread)
-        thread.daemon = True
-        thread.start()
-        return thread
-
-    def extract_audio_chunks(self, input_file):
-        """Extracts audio in chunks from a live stream."""
-        base_file = os.path.splitext(input_file)[0]
-        last_processed_time = 0
-
-        while not self.stop_event.is_set():
-            try:
-                if os.path.exists(f"{base_file}.wav"):
-                    audio = AudioSegment.from_wav(f"{base_file}.wav")
-                    duration_sec = len(audio) / 1000
-
-                    while last_processed_time + self.chunk_duration <= duration_sec:
-                        chunk = audio[last_processed_time * 1000:(last_processed_time + self.chunk_duration) * 1000]
-                        chunk_filename = f"{base_file}_chunk_{last_processed_time}.wav"
-                        chunk.export(chunk_filename, format="wav")
-
-                        self.audio_queue.put(chunk_filename)
-                        last_processed_time += self.chunk_duration
-                        print(f"Extracted chunk ending at {last_processed_time} seconds")
-
-                time.sleep(2)
-
-            except Exception as e:
-                print(f"Error extracting audio chunk: {e}")
-                time.sleep(2)
-
-    def transcribe_chunks(self):
-        """Transcribes extracted audio chunks using Whisper."""
-        transcription_text = []
-
-        while not self.stop_event.is_set() or not self.audio_queue.empty():
-            try:
-                chunk_file = self.audio_queue.get(timeout=2)
-                result = self.model.transcribe(chunk_file)
-                transcription = result["text"].strip()
-
-                transcription_text.append(transcription)
+                print(f"❌ Transcription error at {start}s: {e}")
+            finally:
                 os.remove(chunk_file)
 
-            except queue.Empty:
-                continue
-            except Exception as e:
-                print(f"Error transcribing chunk: {e}")
+        with open(self.output_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(transcription_output))
 
-        # Save transcription to a file
-        transcription_file = "transcription_results.txt"
-        with open(transcription_file, "w", encoding="utf-8") as f:
-            f.write("\n".join(transcription_text))
+        os.remove(audio_path)
+        print(f"\n✅ Done! Translated transcription saved to '{self.output_path}'")
 
-        return transcription_file
+class M3U8StreamTranscriber:
+    def __init__(self, stream_url, chunk_duration=30, total_duration=120, model_size="base", output_path="transcription_results.txt"):
+        self.stream_url = stream_url
+        self.chunk_duration = int(chunk_duration)
+        self.total_duration = int(total_duration)
+        self.model = whisper.load_model(model_size)
+        self.output_path = output_path
 
-    def process_live_stream(self, duration=None):
-        """Main function to process a live stream."""
-        temp_file = os.path.join(self.temp_dir, f"live_stream_{int(time.time())}")
-        download_thread = self.download_audio(temp_file)
-        extract_thread = threading.Thread(target=self.extract_audio_chunks, args=(temp_file,))
-        extract_thread.daemon = True
-        extract_thread.start()
-        transcribe_thread = threading.Thread(target=self.transcribe_chunks)
-        transcribe_thread.daemon = True
-        transcribe_thread.start()
-
+    def transcribe(self):
+        output_file = open(self.output_path, "w", encoding="utf-8")
         start_time = time.time()
+        chunk_num = 1
 
-        try:
-            while duration is None or time.time() - start_time < duration:
-                time.sleep(2)
-                if not download_thread.is_alive() and not extract_thread.is_alive():
-                    break
-        except KeyboardInterrupt:
-            print("Process interrupted by user.")
-        finally:
-            self.stop_event.set()
-            download_thread.join(timeout=3)
-            extract_thread.join(timeout=3)
-            transcribe_thread.join(timeout=3)
+        while time.time() - start_time < self.total_duration:
+            with NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio:
+                temp_filename = temp_audio.name
 
-        return "transcription_results.txt"
+            print(f"\n📡 Recording chunk {chunk_num}...")
+            command = [
+                "ffmpeg", "-y",
+                "-i", self.stream_url,
+                "-t", str(self.chunk_duration),
+                "-vn",
+                "-acodec", "pcm_s16le",
+                "-ar", "16000",
+                "-ac", "1",
+                temp_filename
+            ]
+
+            try:
+                subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+            except subprocess.CalledProcessError:
+                print("⚠️ Failed to record this chunk. Retrying...")
+                os.remove(temp_filename)
+                time.sleep(5)
+                continue
+
+            print("📝 Transcribing...")
+            try:
+                result = self.model.transcribe(temp_filename, task="translate")
+                print("🗣️  " + result["text"].strip())
+                output_file.write(result["text"].strip() + "\n")
+                output_file.flush()
+            except Exception as e:
+                print(f"❌ Transcription error: {e}")
+            finally:
+                os.remove(temp_filename)
+
+            chunk_num += 1
+
+        output_file.close()
+        print(f"\n✅ Done! Transcription saved to '{self.output_path}'")
