@@ -203,7 +203,7 @@ def main():
         logger.error(f"Input file not found: {input_file}")
         return
     
-    extractor = ClaimExtractor(max_claims=6)
+    extractor = ClaimExtractor(max_claims=5)
     success = extractor.process_transcription(input_file, output_file)
     
     if success:
