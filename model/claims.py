@@ -2,12 +2,7 @@ import os
 import re
 import nltk
 import spacy
-import logging
 from nltk.tokenize import sent_tokenize
-
-# Logging setup
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 class ClaimExtractor:
     def __init__(self, max_claims=5):
@@ -29,7 +24,7 @@ class ClaimExtractor:
             with open(file_path, 'r', encoding='utf-8') as f:
                 return f.read()
         except Exception as e:
-            logger.error(f"Failed to read transcription: {e}")
+            print(f"Error reading transcription: {e}")
             return ""
 
     def clean_text(self, text):
@@ -52,12 +47,7 @@ class ClaimExtractor:
 
         return list(set(claims))[:self.max_claims]
 
-    def format_and_save_claims(self, claims, output_file):
-        with open(output_file, 'w', encoding='utf-8') as f:
-            for i, claim in enumerate(claims):
-                f.write(f"CLAIM_{i+1}: {claim.strip()}\n")
-
-    def process(self, input_file, output_file):
+    def process_transcription(self, input_file, output_file):
         text = self.read_transcription(input_file)
         if not text:
             return False
@@ -66,9 +56,10 @@ class ClaimExtractor:
         claims = self.extract_factual_claims(cleaned)
 
         if not claims:
-            logger.warning("No claims extracted.")
             return False
 
-        self.format_and_save_claims(claims, output_file)
-        logger.info(f"{len(claims)} claims saved to {output_file}")
+        with open(output_file, 'w', encoding='utf-8') as f:
+            for idx, claim in enumerate(claims, 1):
+                f.write(f"CLAIM_{idx}: {claim.strip()}\n")
+
         return True

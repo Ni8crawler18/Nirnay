@@ -1,67 +1,73 @@
 import os
-import queue
-import threading
 import time
+import queue
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from model import transcribe, claims
+
+from model import transcriber, claims as claim_module
 
 app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Or specify your frontend URL like ["http://localhost:3000"]
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # You can restrict to ["POST", "GET"] if needed
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Queues for processing
 text_queue = queue.Queue()
 
-# Ensure model directory has an __init__.py
-os.makedirs("model", exist_ok=True)
-open("model/__init__.py", "a").close()
-
-# Request model
 class TranscribeRequest(BaseModel):
     url: str
     chunk_duration: int = 30
     model_size: str = "base"
+    duration: int = 120
 
 @app.post("/transcribe")
 async def transcribe_audio(request: TranscribeRequest, background_tasks: BackgroundTasks):
-    """Endpoint to transcribe a live stream."""
-    transcription_file = f"transcription_{int(time.time())}.txt"
-    background_tasks.add_task(process_transcription, request.url, request.chunk_duration, request.model_size, transcription_file)
-    return {"message": "Transcription started", "file": transcription_file}
+    timestamp = int(time.time())
+    output_file = f"transcription_{timestamp}.txt"
+    background_tasks.add_task(
+        transcribe_background,
+        request.url,
+        request.chunk_duration,
+        request.duration,
+        request.model_size,
+        output_file
+    )
+    return {"message": "Transcription started", "file": output_file}
 
-def process_transcription(url, chunk_duration, model_size, output_file):
-    """Runs the transcription pipeline in the background."""
-    transcriber = transcribe.M3U8StreamTranscriber(url, chunk_duration, model_size)
-    transcription_file = transcriber.transcribe()  # Default 5 minutes
-    os.rename(transcription_file, output_file)  # Rename file for uniqueness
-    text_queue.put(output_file)
+def transcribe_background(url, chunk_duration, duration, model_size, output_file):
+    transcriber_instance = transcriber.M3U8StreamTranscriber(
+        stream_url=url,
+        chunk_duration=chunk_duration,
+        total_duration=duration,
+        model_size=model_size,
+        output_path=output_file
+    )
+    path = transcriber_instance.transcribe()
+    text_queue.put(path)
 
 @app.post("/extract_claims")
 async def extract_claims():
-    """Endpoint to extract claims from the last transcription."""
     if text_queue.empty():
-        return {"error": "No transcription available"}
-    
+        return {"error": "No transcription file found"}
+
     transcription_file = text_queue.get()
     claims_file = transcription_file.replace("transcription", "claims")
 
-    extractor = claims.ClaimExtractor()
+    extractor = claim_module.ClaimExtractor()
     success = extractor.process_transcription(transcription_file, claims_file)
 
     if success:
-        return {"message": "Claims extracted", "output_file": claims_file}
-    return {"error": "Claims extraction failed"}
+        return {"message": "Claims extracted", "file": claims_file}
+    return {"error": "Extraction failed"}
 
 @app.get("/")
 def root():
-    return {"message": "Server is running!"}
+    return {"message": "API is running"}
 
 @app.get("/ping")
 def ping():
