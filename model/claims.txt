@@ -1,29 +1,9 @@
-CLAIM_1: Over to Myanmar, where the ruling military government has announced temporary ceasefire and operations against armed opponents from 2nd of April until the 22nd of this month, the ceasefire comes following the deadly earthquake of 7.7 magnitude.
+CLAIM_1: Over to Myanmar, where the ruling military government has announced temporary ceasefire and operations against armed opponents from 2nd of April until the 22nd of this month, the ceasefire comes following the deadly earthquake of 7.7 magnitude.  
 
-CLAIM_2: Now according to the state run MRTV, the ceasefires to facilitate rehabilitation of the country after the disaster.
+CLAIM_2: The Myanmar military overthrew on Sangsuji government in 2021.
 
-CLAIM_3: The Myanmar military overthrew on Sangsuji government in 2021.
+CLAIM_3: Washington also said that it will send a three member assessment team, though their arrival has been delayed by problems to obtain visa from the military regime.
 
-CLAIM_4: However, the people from cities like Mandalay and Sagan have said that they are yet... to receive any help from the military.
+CLAIM_4: In the meantime, the UN World Food Programme has started distributing aid to victims of the earthquake in which over 2000...
 
-CLAIM_5: To show sympathy to the victims of the earthquake across the country, to provide the effective rescue operation and rehabilitation with regards to the stability, the period between the second and 22nd of April is declared a temporary ceasefire by the military.
-
-CLAIM_6: In the meantime, the UN World Food Programme has started distributing aid to victims of the earthquake in which over 2000... 800 people work in.
-
-CLAIM_7: International rescuers have rushed to Myanmar after the deadly quake to provide relief operations.
-
-CLAIM_8: Beijing dispatched first response teams including dozens of medical workers and earthquake experts, field hospital workers and rescue dogs.
-
-CLAIM_9: China has also pledged to deliver 13.76 million dollars worth of supplies.
-
-CLAIM_10: And Indias foreign ministry on Tuesday said that India has delivered 625 tons of aid.
-
-CLAIM_11: Now the Indian Army has set up a 60-bedded field hospital.
-
-CLAIM_12: in Manley and treated over 150 victims.
-
-CLAIM_13: The facility will also help in tackling trauma cases, emergency surgeries and provide essential medical services to support the local health care system.
-
-CLAIM_14: The United States, which was until now considered the worlds top humanitarian donor, has only offered 2 million US dollars.
-
-CLAIM_15: Washington also said that it will send a three member assessment team, though their arrival has been delayed by problems to obtain visa from the military regime.
+CLAIM_5: And Indias foreign ministry on Tuesday said that India has delivered 625 tons of aid.  
