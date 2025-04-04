@@ -12,15 +12,28 @@ export const transcribeAudio = async (url: string, chunkDuration: number = 30, m
     }
 };
 
-export const extractClaims = async (url: string) => {
+export const extractClaims = async () => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/extract_claims`, { url }); // Include URL in the request
+        const response = await axios.post(`${API_BASE_URL}/extract_claims`);
+        console.log("Extract claims response:", response.data);
         return response.data;
     } catch (error) {
         console.error("Error in claim extraction request:", error);
         throw error;
     }
+}
+
+export const getTranscription = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/get_transcription`);
+        console.log("Get transcription response:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching transcription:", error);
+        throw error;
+    }
 };
+
 
 export const pingServer = async () => {
     try {

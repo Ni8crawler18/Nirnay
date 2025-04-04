@@ -27,8 +27,7 @@ class TranscribeRequest(BaseModel):
 
 @app.post("/transcribe")
 async def transcribe_audio(request: TranscribeRequest, background_tasks: BackgroundTasks):
-    timestamp = int(time.time())
-    output_file = f"transcription_{timestamp}.txt"
+    output_file = "transcription_results.txt"
     background_tasks.add_task(
         transcribe_background,
         request.url,
@@ -50,20 +49,49 @@ def transcribe_background(url, chunk_duration, duration, model_size, output_file
     path = transcriber_instance.transcribe()
     text_queue.put(path)
 
+import time
+
 @app.post("/extract_claims")
 async def extract_claims():
-    if text_queue.empty():
-        return {"error": "No transcription file found"}
+    transcription_file = "transcription_results.txt"
+    claims_file = "claims_results.txt"
 
-    transcription_file = text_queue.get()
-    claims_file = transcription_file.replace("transcription", "claims")
+    # Wait 60 seconds to allow transcription to complete
+    time.sleep(60)
 
     extractor = claim_module.ClaimExtractor()
     success = extractor.process_transcription(transcription_file, claims_file)
 
     if success:
-        return {"message": "Claims extracted", "file": claims_file}
+        with open(transcription_file, "r", encoding="utf-8") as tf:
+            transcription_text = tf.read()
+
+        with open(claims_file, "r", encoding="utf-8") as cf:
+            claims_text = cf.read()
+
+        return {
+            "message": "Claims extracted",
+            "transcription": transcription_text,
+            "claims": claims_text.splitlines()  # split into list of claims
+        }
+
     return {"error": "Extraction failed"}
+
+@app.get("/get_transcription")
+async def get_transcription():
+    transcription_file = "transcription_results.txt"
+
+    if not os.path.exists(transcription_file) or os.path.getsize(transcription_file) == 0:
+        return {"error": "Transcription not available yet"}
+
+    with open(transcription_file, "r", encoding="utf-8") as tf:
+        transcription_text = tf.read()
+
+    return {
+        "message": "Transcription fetched successfully",
+        "transcription": transcription_text
+    }
+
 
 @app.get("/")
 def root():

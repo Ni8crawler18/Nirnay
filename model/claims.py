@@ -6,6 +6,7 @@ from nltk.tokenize import sent_tokenize
 
 class ClaimExtractor:
     def __init__(self, max_claims=5):
+        print("Initializing ClaimExtractor...")
         self.max_claims = max_claims
 
         try:

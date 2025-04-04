@@ -6,8 +6,7 @@ import yt_dlp
 from pydub import AudioSegment
 from tempfile import NamedTemporaryFile
 
-# Load Whisper only once to avoid reloading for every instance
-WHISPER_MODEL = whisper.load_model("base", device="cpu")  # or use "cuda" if you have GPU
+WHISPER_MODEL = whisper.load_model("base", device="cpu")  
 
 class YouTubeTranscriber:
     def __init__(self, url, chunk_duration=30, output_path="transcription_results.txt"):
@@ -105,5 +104,6 @@ class M3U8StreamTranscriber:
                     pass
                 finally:
                     os.remove(temp_filename)
+        print("Transcription completed.")
 
         return self.output_path

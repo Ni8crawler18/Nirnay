@@ -1,0 +1,5 @@
+CLAIM_1: And with that, it is time for us to wrap up this edition of Business 360.
+CLAIM_2: 18th day, too, and we're back in a moment with more.
+CLAIM_3: At least 112 Palestinians have been killed in Israeli attacks across Gaza in the last 24 hours.
+CLAIM_4: The UN has estimated around three lack Palestinians were forcibly displaced since Israel broke the ceasefire in Gaza on the 18th of March.
+CLAIM_5: The Israeli army also conducted strikes on schools, sheltering displaced families, killing at least 33 women and children.

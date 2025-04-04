@@ -4,7 +4,7 @@ import { useState } from "react"
 import { AlertCircle, ArrowRight, CheckCircle, ChevronDown, Clock, ExternalLink, XCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { transcribeAudio, extractClaims } from "@/lib/api";
+import { transcribeAudio, extractClaims, getTranscription } from "@/lib/api";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -80,38 +80,44 @@ export default function DashboardPage() {
     setProgress(10);
   
     try {
-      // Simulate audio extraction complete
-      await new Promise((res) => setTimeout(res, 1000)); // simulate delay
+      // 1. Start audio extraction (simulated delay)
+      await new Promise((res) => setTimeout(res, 1000));
       setStatus(prev => ({ ...prev, audio: "complete", transcript: "in_progress" }));
       setProgress(30);
   
-      // Step 1: Transcribe Audio
-      const transcriptionResponse = await transcribeAudio(url);
+      // 2. Trigger background transcription
+      await transcribeAudio(url);
+  
+      // 3. Wait for transcription process (actual processing time)
+      await new Promise((res) => setTimeout(res, 60000)); // 60 sec wait
+      const transcriptionResponse = await getTranscription();
       setTranscript(transcriptionResponse.transcription || "No transcript available.");
       setStatus(prev => ({ ...prev, transcript: "complete", claims: "in_progress" }));
       setProgress(60);
   
-      // Step 2: Extract Claims
-      const claimsResponse = await extractClaims(url); // Pass the URL here
-      if (claimsResponse.output_file) {
-        const claimsText = await fetch(claimsResponse.output_file).then(res => res.text());
-        setClaims(claimsText.split("\n"));
+      // 4. Extract claims
+      const claimsResponse = await extractClaims();
+      if (claimsResponse.claims) {
+        setClaims(claimsResponse.claims);
+      } else {
+        setClaims(["No claims detected."]);
       }
       setStatus(prev => ({ ...prev, claims: "complete", verify: "in_progress" }));
       setProgress(80);
   
-      // Simulate verification stage
-      await new Promise((res) => setTimeout(res, 1000)); // simulate delay
+      // 5. Simulate claim verification
+      await new Promise((res) => setTimeout(res, 1000));
       setStatus(prev => ({ ...prev, verify: "complete" }));
       setProgress(100);
   
       setShowResults(true);
     } catch (error) {
-      console.error("Error processing:", error);
+      console.error("Error during analysis:", error);
     } finally {
       setIsAnalyzing(false);
     }
   };
+  
 
   const statusKeys: Array<keyof typeof status> = ["audio", "transcript", "claims", "verify"];
   // Use `statusKeys` to safely index `status` in other parts of the code if needed.
