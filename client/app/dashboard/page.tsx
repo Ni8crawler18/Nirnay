@@ -226,7 +226,7 @@ export default function DashboardPage() {
               <div className="mb-8 flex items-center justify-center">
                 <div className="relative flex h-48 w-48 items-center justify-center rounded-full border-8 border-green-100">
                   <div className="text-center">
-                    <div className="text-6xl font-bold text-green-600">87%</div>
+                    <div className="text-6xl font-bold text-green-600">{Math.floor(Math.random() * (90 - 80 + 1)) + 80}%</div>
                     <div className="text-sm font-medium text-muted-foreground">Reliability Score</div>
                   </div>
                 </div>
@@ -486,7 +486,7 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="rounded-lg bg-slate-50 p-6 text-center">
                   <Image
-                    src="/placeholder.svg?height=80&width=80"
+                    src="/client/public/no_history_of_claims.png?height=80&width=80"
                     alt="Empty state"
                     width={80}
                     height={80}
