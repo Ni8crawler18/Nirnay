@@ -287,66 +287,34 @@ export default function DashboardPage() {
 
                 <TabsContent value="sources" className="space-y-6 pt-6">
                   <div className="grid gap-6 md:grid-cols-2">
-                    <Card className="shadow-sm">
+                  <Card className="shadow-sm">
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-lg">NASA Global Climate Change</CardTitle>
+                        <CardTitle className="text-lg">What's happening in ETCFO</CardTitle>
                         <CardDescription>Official data source</CardDescription>
                       </CardHeader>
-                      <CardContent>
-                        <p className="text-muted-foreground">
-                          Official NASA data on global temperature rise and climate indicators
-                        </p>
-                      </CardContent>
                       <CardFooter className="border-t pt-4">
-                        <Link href="#" className="text-sm text-orange-600 flex items-center">
+                        <Link
+                          href="https://economictimes.indiatimes.com/news/economy/articlelist/1286551815.cms?from=mdr"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-orange-600 flex items-center"
+                        >
                           Visit source <ExternalLink className="ml-1 h-3 w-3" />
                         </Link>
                       </CardFooter>
                     </Card>
                     <Card className="shadow-sm">
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-lg">International Energy Agency</CardTitle>
+                        <CardTitle className="text-lg">Indian banking liquidity turned surplus for the first time in over three months in March.</CardTitle>
                         <CardDescription>Official data source</CardDescription>
                       </CardHeader>
-                      <CardContent>
-                        <p className="text-muted-foreground">
-                          Global energy statistics and renewable energy adoption data
-                        </p>
-                      </CardContent>
                       <CardFooter className="border-t pt-4">
-                        <Link href="#" className="text-sm text-orange-600 flex items-center">
-                          Visit source <ExternalLink className="ml-1 h-3 w-3" />
-                        </Link>
-                      </CardFooter>
-                    </Card>
-                    <Card className="shadow-sm">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="text-lg">MIT Climate Portal</CardTitle>
-                        <CardDescription>Academic source</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-muted-foreground">
-                          Research on electric vehicle lifecycle emissions compared to conventional vehicles
-                        </p>
-                      </CardContent>
-                      <CardFooter className="border-t pt-4">
-                        <Link href="#" className="text-sm text-orange-600 flex items-center">
-                          Visit source <ExternalLink className="ml-1 h-3 w-3" />
-                        </Link>
-                      </CardFooter>
-                    </Card>
-                    <Card className="shadow-sm">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="text-lg">IPCC Sixth Assessment Report</CardTitle>
-                        <CardDescription>International organization</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-muted-foreground">
-                          Comprehensive climate change assessment from the Intergovernmental Panel on Climate Change
-                        </p>
-                      </CardContent>
-                      <CardFooter className="border-t pt-4">
-                        <Link href="#" className="text-sm text-orange-600 flex items-center">
+                      <Link
+                          href="https://cfo.economictimes.indiatimes.com/news"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-orange-600 flex items-center"
+                        >
                           Visit source <ExternalLink className="ml-1 h-3 w-3" />
                         </Link>
                       </CardFooter>
