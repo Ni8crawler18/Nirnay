@@ -418,10 +418,9 @@ export default function LandingPage() {
                     <Button
                       size="lg"
                       variant="outline"
-                      className="text-white border-white hover:bg-orange-700 relative overflow-hidden group"
+                      className="text-white border-white bg-transparent hover:bg-orange-700 transition-colors"
                     >
-                      <span className="relative z-10">Contact Our Team</span>
-                      <span className="absolute inset-0 bg-white/20 transform translate-y-full group-hover:translate-y-0 transition-transform"></span>
+                      Contact Our Team
                     </Button>
                   </Link>
                 </div>
