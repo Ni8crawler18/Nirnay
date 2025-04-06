@@ -587,26 +587,6 @@ export default function DashboardPage() {
                   >
                     Your browser does not support the video tag.
                   </video>
-
-                  {/* Optional overlay icon (non-blocking) */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="rounded-full bg-white/80 p-4">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="40"
-                        height="40"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="text-orange-600"
-                      >
-                        <polygon points="5 3 19 12 5 21 5 3" />
-                      </svg>
-                    </div>
-                  </div>
                 </div>
               </div>
             </CardContent>
