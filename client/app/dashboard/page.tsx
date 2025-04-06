@@ -446,27 +446,28 @@ export default function DashboardPage() {
       {!isAnalyzing && !showResults && (
         <div className="space-y-10">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Recent Analyses</CardTitle>
-                <CardDescription>Your recent fact-checking activities</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-lg bg-slate-50 p-6 text-center">
-                  <Image
-                    src="no_history_of_claims.png?height=200&width=200"
-                    alt="Empty state"
-                    width={80}
-                    height={80}
-                    className="mx-auto mb-4"
-                  />
-                  <p className="text-sm text-muted-foreground mb-4">You haven't analyzed any content yet.</p>
-                  <Button variant="outline" size="sm" className="w-full">
-                    View History
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+          <Card className="shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Recent Analyses</CardTitle>
+              <CardDescription>Your recent fact-checking activities</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-lg bg-slate-50 p-6 text-center">
+                <Image
+                  src="/no_history_of_claims.png" // Remove height/width params from URL
+                  alt="Empty state"
+                  width={300} // Make it 200x200 as intended
+                  height={200}
+                  className="mx-auto mb-4"
+                />
+                <p className="text-sm text-muted-foreground mb-4">You haven't analyzed any content yet.</p>
+                <Button variant="outline" size="sm" className="w-full">
+                  View History
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
 
             <Card className="shadow-sm">
               <CardHeader className="pb-3">
@@ -576,19 +577,19 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="relative h-[250px] rounded-lg overflow-hidden shadow-md">
-                <video
-                  src="/Nirnay - tutorial.mp4"
-                  width={800}
-                  height={500}
-                  className="object-cover w-full h-full rounded-lg shadow-md"
-                  controls
-                  controlsList="nodownload"
-                  disablePictureInPicture
-                  playsInline
-                >
-                  Your browser does not support the video tag.
-                </video>
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  <video
+                    src="/nirnay-tutorial.mp4"
+                    className="object-cover w-full h-full rounded-lg shadow-md"
+                    controls
+                    controlsList="nodownload"
+                    disablePictureInPicture
+                    playsInline
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+
+                  {/* Optional overlay icon (non-blocking) */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="rounded-full bg-white/80 p-4">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -602,7 +603,7 @@ export default function DashboardPage() {
                         strokeLinejoin="round"
                         className="text-orange-600"
                       >
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        <polygon points="5 3 19 12 5 21 5 3" />
                       </svg>
                     </div>
                   </div>
