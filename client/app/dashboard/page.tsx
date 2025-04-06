@@ -486,7 +486,7 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="rounded-lg bg-slate-50 p-6 text-center">
                   <Image
-                    src="/client/public/no_history_of_claims.png?height=80&width=80"
+                    src="no_history_of_claims.png?height=200&width=400"
                     alt="Empty state"
                     width={80}
                     height={80}
