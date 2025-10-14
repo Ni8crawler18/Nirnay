@@ -28,10 +28,10 @@ source ~/env/bin/activate
 ```sh
 pip install -r requirements.txt
 ```
-### 3️⃣ Run the App
-```sh
-streamlit run client/app.py
-```
+
+3. cd client and run - npm run dev 
+
+4. for the backend, python -m uvicorn run:app --reload
 
 ## Usage
 1. **Provide a YouTube Live link** or select a sample video.
